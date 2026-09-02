@@ -12,6 +12,7 @@ const supabase = createClient(
 export default function DashboardLayout({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -35,7 +36,7 @@ export default function DashboardLayout({ children }) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', background: '#f3f4f6', color: '#4b5563' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', background: '#f8fafc', color: '#4b5563' }}>
         <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>Verificando acceso a Folaxi...</p>
       </div>
     );
@@ -46,14 +47,18 @@ export default function DashboardLayout({ children }) {
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'sans-serif' }}>
       {/* Barra de Navegación Superior */}
-      <header style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', position: 'sticky', top: 0, zIndex: 50 }}>
+      <header style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '14px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', position: 'sticky', top: 0, zIndex: 50 }}>
+        
+        {/* Logo y Enlaces de Escritorio */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
             <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>
               Folaxi<span style={{ color: '#2563eb' }}>.com</span>
             </h2>
           </Link>
-          <nav style={{ display: 'flex', gap: '8px' }}>
+          
+          {/* Navegación desktop */}
+          <nav style={{ display: 'flex', gap: '8px', '@media (max-width: 768px)': { display: 'none' } }}>
             <Link 
               href="/dashboard" 
               style={{ 
@@ -102,8 +107,9 @@ export default function DashboardLayout({ children }) {
           </nav>
         </div>
 
+        {/* Acciones de Usuario y Menú Móvil */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500', display: window?.innerWidth < 768 ? 'none' : 'block' }}>
             {user?.email}
           </span>
           <button 
@@ -124,6 +130,19 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
       </header>
+
+      {/* Barra secundaria de navegación rápida para móviles */}
+      <div style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '8px 16px', display: 'flex', justifyContent: 'space-around', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+        <Link href="/dashboard" style={{ textDecoration: 'none', color: isActive('/dashboard') ? '#2563eb' : '#64748b', fontSize: '0.85rem', fontWeight: '600' }}>
+          🏠 Inicio
+        </Link>
+        <Link href="/dashboard/miner" style={{ textDecoration: 'none', color: isActive('/dashboard/miner') ? '#2563eb' : '#64748b', fontSize: '0.85rem', fontWeight: '600' }}>
+          🪙 Minero
+        </Link>
+        <Link href="/dashboard/campaigns/new" style={{ textDecoration: 'none', color: isActive('/dashboard/campaigns/new') ? '#2563eb' : '#64748b', fontSize: '0.85rem', fontWeight: '600' }}>
+          📈 Campaña
+        </Link>
+      </div>
 
       {/* Contenido dinámico de las subpáginas */}
       <main style={{ padding: '20px 0 40px 0' }}>
