@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -11,15 +11,18 @@ const supabase = createClient(
 
 export default function DashboardLayout({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function checkUser() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        router.push('/login'); // O redirigir a tu ruta de autenticación
+        router.push('/login');
       } else {
         setUser(session.user);
+        setLoading(false);
       }
     }
     checkUser();
@@ -30,34 +33,92 @@ export default function DashboardLayout({ children }) {
     router.push('/');
   };
 
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', background: '#f3f4f6', color: '#4b5563' }}>
+        <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>Verificando acceso a Folaxi...</p>
+      </div>
+    );
+  }
+
+  const isActive = (path) => pathname === path;
+
   return (
-    <div style={{ minHeight: '100vh', background: '#f3f4f6', fontFamily: 'sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'sans-serif' }}>
       {/* Barra de Navegación Superior */}
-      <header style={{ background: '#ffffff', borderBottom: '1px solid #e5e7eb', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#111827', fontWeight: '800' }}>
-            Folaxi<span style={{ color: '#2563eb' }}>.com</span>
-          </h2>
-          <nav style={{ display: 'flex', gap: '16px' }}>
-            <Link href="/dashboard" style={{ textDecoration: 'none', color: '#4b5563', fontSize: '0.95rem', fontWeight: '500' }}>
+      <header style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.02)', position: 'sticky', top: 0, zIndex: 50 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+            <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>
+              Folaxi<span style={{ color: '#2563eb' }}>.com</span>
+            </h2>
+          </Link>
+          <nav style={{ display: 'flex', gap: '8px' }}>
+            <Link 
+              href="/dashboard" 
+              style={{ 
+                textDecoration: 'none', 
+                color: isActive('/dashboard') ? '#2563eb' : '#64748b', 
+                fontSize: '0.9rem', 
+                fontWeight: isActive('/dashboard') ? '600' : '500',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                background: isActive('/dashboard') ? '#eff6ff' : 'transparent',
+                transition: 'all 0.2s'
+              }}
+            >
               Inicio
             </Link>
-            <Link href="/dashboard/miner" style={{ textDecoration: 'none', color: '#4b5563', fontSize: '0.95rem', fontWeight: '500' }}>
+            <Link 
+              href="/dashboard/miner" 
+              style={{ 
+                textDecoration: 'none', 
+                color: isActive('/dashboard/miner') ? '#2563eb' : '#64748b', 
+                fontSize: '0.9rem', 
+                fontWeight: isActive('/dashboard/miner') ? '600' : '500',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                background: isActive('/dashboard/miner') ? '#eff6ff' : 'transparent',
+                transition: 'all 0.2s'
+              }}
+            >
               Minero 🪙
             </Link>
-            <Link href="/dashboard/campaigns/new" style={{ textDecoration: 'none', color: '#4b5563', fontSize: '0.95rem', fontWeight: '500' }}>
+            <Link 
+              href="/dashboard/campaigns/new" 
+              style={{ 
+                textDecoration: 'none', 
+                color: isActive('/dashboard/campaigns/new') ? '#2563eb' : '#64748b', 
+                fontSize: '0.9rem', 
+                fontWeight: isActive('/dashboard/campaigns/new') ? '600' : '500',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                background: isActive('/dashboard/campaigns/new') ? '#eff6ff' : 'transparent',
+                transition: 'all 0.2s'
+              }}
+            >
               Nueva Campaña 📈
             </Link>
           </nav>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#6b7280', display: { xs: 'none', sm: 'block' } }}>
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>
             {user?.email}
           </span>
           <button 
             onClick={handleLogout}
-            style={{ padding: '8px 14px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem' }}
+            style={{ 
+              padding: '8px 14px', 
+              background: '#fef2f2', 
+              color: '#dc2626', 
+              border: '1px solid #fee2e2', 
+              borderRadius: '8px', 
+              cursor: 'pointer', 
+              fontWeight: '600', 
+              fontSize: '0.85rem',
+              transition: 'background 0.2s'
+            }}
           >
             Cerrar Sesión
           </button>
@@ -65,7 +126,7 @@ export default function DashboardLayout({ children }) {
       </header>
 
       {/* Contenido dinámico de las subpáginas */}
-      <main style={{ paddingBottom: '40px' }}>
+      <main style={{ padding: '20px 0 40px 0' }}>
         {children}
       </main>
     </div>
