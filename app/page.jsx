@@ -32,7 +32,8 @@ export default function Home() {
               fontWeight: '700', 
               fontSize: '0.95rem',
               boxShadow: '0 10px 20px -5px rgba(37, 99, 235, 0.5)',
-              transition: 'transform 0.2s, box-shadow 0.2s'
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              display: 'block'
             }}
           >
             Iniciar Sesión / Registrarse
@@ -49,7 +50,8 @@ export default function Home() {
               fontWeight: '600', 
               fontSize: '0.95rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              transition: 'background 0.2s'
+              transition: 'background 0.2s',
+              display: 'block'
             }}
           >
             Ir al Dashboard ⚡
