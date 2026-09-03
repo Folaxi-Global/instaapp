@@ -1,10 +1,9 @@
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open('vartens-cache-v1').then((cache) => {
+    caches.open('folaxi-cache-v1').then((cache) => {
       return cache.addAll([
         '/',
-        '/studio',
-        '/login'
+        '/dashboard/miner'
       ]);
     })
   );
