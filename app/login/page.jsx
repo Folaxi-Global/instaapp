@@ -22,66 +22,56 @@ export default function DirectInstagramLogin() {
     setLoading(true);
 
     try {
-      // Como estamos emulando el modelo directo de la APK, guardamos o actualizamos
-      // la cuenta de Instagram introducida directamente en el almacenamiento local o sesión,
-      // y creamos una sesión de invitado/anónima estándar en Supabase si es necesario, 
-      // o guardamos el registro en la tabla de perfiles.
-      
+      // 1. Guardar de forma local e inmediata los datos para el minero
       localStorage.setItem('folaxi_ig_user', username.trim());
+      localStorage.setItem('folaxi_logged', 'true');
 
-      // Intentamos registrar un perfil básico si existe una sesión previa, o pasamos directo
-      const { data: { session } } = await supabase.auth.getSession();
+      // 2. Intentar registrar o autenticar en Supabase de manera silenciosa
+      const cleanEmail = `${username.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}@folaxi.com`;
+      const simplePassword = 'Password123*';
 
-      if (session?.user) {
+      let { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password: simplePassword,
+      });
+
+      let userId = authData?.user?.id;
+
+      if (authError || !userId) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password: simplePassword,
+        });
+
+        if (signUpData?.user) {
+          userId = signUpData.user.id;
+          await supabase.from('profiles').upsert([
+            {
+              id: userId,
+              username: username.trim(),
+              ig_username: username.trim(),
+              coins: 10
+            }
+          ]);
+        }
+      } else if (userId) {
         await supabase.from('profiles').upsert([
           {
-            id: session.user.id,
+            id: userId,
             username: username.trim(),
             ig_username: username.trim(),
             coins: 10
           }
         ]);
-      } else {
-        // Si no hay sesión de Supabase abierta, usamos una sesión temporal estándar 
-        // o guardamos el estado para el minero.
-        // Creamos un usuario temporal con credenciales válidas y simples en Supabase:
-        const cleanEmail = `${username.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}@folaxi.com`;
-        const simplePassword = 'Password123*'; // Cumple con los requisitos estándar de Supabase
-
-        let { error: signInError } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password: simplePassword,
-        });
-
-        if (signInError) {
-          // Si no existe, lo creamos al vuelo
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-            email: cleanEmail,
-            password: simplePassword,
-          });
-
-          if (!signUpError && signUpData?.user) {
-            await supabase.from('profiles').upsert([
-              {
-                id: signUpData.user.id,
-                username: username.trim(),
-                ig_username: username.trim(),
-                coins: 10
-              }
-            ]);
-          }
-        }
       }
-
-      // Redirigir de inmediato al minero
-      router.push('/dashboard/miner');
     } catch (err) {
-      console.error(err);
-      // Fallback absoluto: si Supabase da cualquier problema de auth, permitimos el acceso igual guardándolo localmente
-      router.push('/dashboard/miner');
-    } finally {
-      setLoading(false);
+      console.log('Acceso por bypass local activado:', err);
     }
+
+    // 3. Redirección forzada sin rebotes
+    setTimeout(() => {
+      window.location.href = '/dashboard/miner';
+    }, 500);
   };
 
   return (
@@ -93,7 +83,7 @@ export default function DirectInstagramLogin() {
       </div>
 
       <div style={{ textAlign: 'center', width: '100%', maxWidth: '400px' }}>
-        {/* Nuestro Logotipo Oficial */}
+        {/* Logotipo Oficial */}
         <h1 style={{ fontSize: '3rem', fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.03em', margin: '0 0 30px 0', textShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
           Folaxi<span style={{ color: '#fbbf24' }}>.com</span>
         </h1>
