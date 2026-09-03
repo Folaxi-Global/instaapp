@@ -8,6 +8,9 @@ const supabase = createClient(
 );
 
 export default function MinerPage() {
+  const [step, setStep] = useState('login'); // 'login' | 'loading' | 'dashboard'
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [coins, setCoins] = useState(0);
@@ -20,7 +23,6 @@ export default function MinerPage() {
   const [igPassword, setIgPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [saveAccount, setSaveAccount] = useState(true);
-  const [isAccountLinked, setIsAccountLinked] = useState(false);
   const [savingAccount, setSavingAccount] = useState(false);
 
   const isRunningRef = useRef(isRunning);
@@ -46,14 +48,13 @@ export default function MinerPage() {
           setCoins(profile.coins || 0);
           if (profile.ig_username) {
             setIgUsername(profile.ig_username);
-            setIsAccountLinked(true);
+            setStep('dashboard');
           }
         }
       } else if (savedUser) {
-        // Bypass local para evitar bloqueos si no hay sesión estricta de Supabase Auth
         setUser({ id: 'local-bypass', email: `${savedUser}@folaxi.com` });
         setIgUsername(savedUser);
-        setIsAccountLinked(true);
+        setStep('dashboard');
         const savedCoins = localStorage.getItem('folaxi_coins');
         if (savedCoins) setCoins(parseInt(savedCoins));
       }
@@ -68,34 +69,46 @@ export default function MinerPage() {
     if (!igUsername.trim() || !igPassword.trim()) return;
     setSavingAccount(true);
 
-    try {
-      // Guardar localmente para evitar rebotes
-      localStorage.setItem('folaxi_ig_user', igUsername.trim());
-      localStorage.setItem('folaxi_coins', coins.toString());
+    // Activar pantalla de carga (0 a 100%) con el logotipo
+    setStep('loading');
+    setLoadingProgress(0);
 
-      if (user && user.id !== 'local-bypass') {
-        await supabase
-          .from('profiles')
-          .update({ ig_username: igUsername.trim() })
-          .eq('id', user.id);
-      } else {
-        setUser({ id: 'local-bypass', email: `${igUsername.trim()}@folaxi.com` });
+    let currentProgress = 0;
+    const interval = setInterval(async () => {
+      currentProgress += Math.floor(Math.random() * 20) + 10;
+      if (currentProgress >= 100) {
+        currentProgress = 100;
+        clearInterval(interval);
+
+        try {
+          localStorage.setItem('folaxi_ig_user', igUsername.trim());
+          localStorage.setItem('folaxi_coins', coins.toString());
+
+          if (user && user.id !== 'local-bypass') {
+            await supabase
+              .from('profiles')
+              .update({ ig_username: igUsername.trim() })
+              .eq('id', user.id);
+          } else {
+            setUser({ id: 'local-bypass', email: `${igUsername.trim()}@folaxi.com` });
+          }
+          setStatusText('¡Cuenta vinculada con éxito! Motor listo.');
+        } catch (err) {
+          console.error(err);
+          setStatusText('¡Cuenta vinculada en modo local!');
+        } finally {
+          setSavingAccount(false);
+          setTimeout(() => {
+            setStep('dashboard');
+          }, 400);
+        }
       }
-
-      setIsAccountLinked(true);
-      setStatusText('¡Cuenta vinculada con éxito! Motor listo.');
-    } catch (err) {
-      console.error(err);
-      // Forzar enlace local aunque falle la red
-      setIsAccountLinked(true);
-      setStatusText('¡Cuenta vinculada en modo local!');
-    } finally {
-      setSavingAccount(false);
-    }
+      setLoadingProgress(currentProgress);
+    }, 250);
   };
 
   useEffect(() => {
-    if (!isRunning || !isAccountLinked) return;
+    if (!isRunning || step !== 'dashboard') return;
 
     let isMounted = true;
 
@@ -105,7 +118,6 @@ export default function MinerPage() {
           setStatusText('Buscando tarea optimizada en la red...');
           setProgress(25);
 
-          // Si estamos usando bypass local, simulamos la tarea de forma fluida
           if (!user || user.id === 'local-bypass') {
             await new Promise((resolve) => setTimeout(resolve, 2500));
             if (!isRunningRef.current || !isMounted) break;
@@ -178,7 +190,7 @@ export default function MinerPage() {
     return () => {
       isMounted = false;
     };
-  }, [isRunning, isAccountLinked, user]);
+  }, [isRunning, step, user]);
 
   if (loadingUser) {
     return (
@@ -193,26 +205,29 @@ export default function MinerPage() {
       
       {/* Cabecera / Saldo superior */}
       <div style={{ width: '100%', maxWidth: '400px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontWeight: '800', fontSize: '1.2rem', fontStyle: 'italic' }}>
+        <div style={{ fontWeight: '800', fontSize: '1.2rem', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <img src="/logo-folaxi.jpg" alt="Logo" style={{ width: '28px', height: '28px', borderRadius: '6px', objectFit: 'cover' }} />
           Folaxi<span style={{ color: '#fbbf24' }}>.com</span>
         </div>
-        <div style={{ background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(8px)', padding: '6px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.2)' }}>
-          <span>🪙</span>
-          <span style={{ fontWeight: '800', fontSize: '1rem' }}>{coins}</span>
-        </div>
+        {step === 'dashboard' && (
+          <div style={{ background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(8px)', padding: '6px 14px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <span>🪙</span>
+            <span style={{ fontWeight: '800', fontSize: '1rem' }}>{coins}</span>
+          </div>
+        )}
       </div>
 
       <div style={{ textAlign: 'center', width: '100%', maxWidth: '400px', margin: '20px 0' }}>
-        {!isAccountLinked ? (
+        
+        {/* PASO 1: Login de Instagram */}
+        {step === 'login' && (
           <div>
             <h1 style={{ fontSize: '2.5rem', fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.03em', margin: '0 0 25px 0', textShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
               Folaxi
             </h1>
 
-            {/* Tarjeta estilo APK exacta */}
             <div style={{ background: '#fff', borderRadius: '24px', padding: '35px 24px 24px 24px', color: '#1e293b', boxShadow: '0 20px 40px rgba(0,0,0,0.25)', position: 'relative' }}>
               
-              {/* Círculo con icono de Instagram */}
               <div style={{ position: 'absolute', top: '-35px', left: '50%', transform: 'translateX(-50%)', width: '70px', height: '70px', background: '#f8fafc', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}>
                 <span style={{ fontSize: '1.8rem' }}>📸</span>
               </div>
@@ -265,8 +280,24 @@ export default function MinerPage() {
               </form>
             </div>
           </div>
-        ) : (
-          /* Panel de Control de Minería una vez conectada la cuenta */
+        )}
+
+        {/* PASO 2: Pantalla de Carga (0 a 100%) con Logo */}
+        {step === 'loading' && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px 10px' }}>
+            <img src="/logo-folaxi.jpg" alt="Folaxi Logo" style={{ width: '85px', height: '85px', borderRadius: '20px', objectFit: 'cover', boxShadow: '0 15px 30px rgba(0,0,0,0.3)', marginBottom: '20px', border: '3px solid rgba(255,255,255,0.4)' }} />
+            <h2 style={{ fontSize: '1.8rem', fontWeight: '900', fontStyle: 'italic', margin: '0 0 8px 0' }}>Folaxi.com</h2>
+            <p style={{ fontSize: '0.9rem', opacity: '0.9', marginBottom: '25px' }}>Sincronizando motor y conectando perfil...</p>
+            
+            <div style={{ width: '100%', background: 'rgba(0,0,0,0.25)', height: '12px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <div style={{ width: `${loadingProgress}%`, background: '#fbbf24', height: '100%', transition: 'width 0.3s ease-in-out', borderRadius: '8px' }} />
+            </div>
+            <div style={{ marginTop: '10px', fontWeight: '800', fontSize: '1.1rem' }}>{loadingProgress}%</div>
+          </div>
+        )}
+
+        {/* PASO 3: Dashboard de Minería */}
+        {step === 'dashboard' && (
           <div style={{ background: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(12px)', borderRadius: '24px', padding: '30px 20px', border: '1px solid rgba(255,255,255,0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
             
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
@@ -278,7 +309,7 @@ export default function MinerPage() {
               <button 
                 onClick={() => {
                   localStorage.removeItem('folaxi_ig_user');
-                  setIsAccountLinked(false);
+                  setStep('login');
                   setIsRunning(false);
                 }}
                 style={{ background: 'rgba(0,0,0,0.2)', border: 'none', color: '#fff', fontSize: '0.75rem', padding: '6px 10px', borderRadius: '8px', cursor: 'pointer', marginLeft: 'auto' }}
