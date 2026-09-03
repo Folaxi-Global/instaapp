@@ -1,144 +1,132 @@
 'use client';
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
+export default function DirectLogin() {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [saveAccount, setSaveAccount] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleAuth = async (e) => {
+  const handleInstagramLogin = async (e) => {
     e.preventDefault();
+    if (!username.trim() || !password.trim()) return;
     setLoading(true);
-    setMessage('');
 
-    if (isSignUp) {
-      // Registro de nuevo usuario
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
+    try {
+      // Registrar o autenticar de forma interna con un usuario anónimo o sesión directa en Supabase
+      const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
+      
+      if (authError) throw authError;
 
-      if (error) {
-        setMessage('Error en el registro: ' + error.message);
-      } else {
-        // Crear automáticamente el perfil en la tabla public.profiles
-        if (data?.user) {
-          await supabase.from('profiles').insert([
+      if (authData?.user) {
+        // Guardar la cuenta de Instagram vinculada al perfil del usuario actual
+        await supabase
+          .from('profiles')
+          .upsert([
             {
-              id: data.user.id,
-              username: email.split('@')[0],
-              coins: 10 // Monedas de regalo iniciales
+              id: authData.user.id,
+              username: username.trim(),
+              ig_username: username.trim(),
+              coins: 10 // Monedas de bonificación inicial
             }
           ]);
-        }
-        setMessage('¡Registro exitoso! Ya puedes iniciar sesión.');
-        setIsSignUp(false);
       }
-    } else {
-      // Inicio de sesión
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
 
-      if (error) {
-        setMessage('Credenciales incorrectas: ' + error.message);
-      } else {
-        router.push('/dashboard');
-      }
+      // Redirigir de inmediato al minero para comenzar a operar
+      router.push('/dashboard/miner');
+    } catch (err) {
+      console.error(err);
+      alert('Error al conectar la cuenta. Inténtalo de nuevo.');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f8fafc', fontFamily: 'sans-serif', padding: '16px' }}>
-      <div style={{ padding: '36px', maxWidth: '420px', width: '100%', background: '#ffffff', borderRadius: '20px', boxShadow: '0 15px 30px -5px rgba(0, 0, 0, 0.05)', border: '1px solid #f1f5f9' }}>
-        
-        {/* Cabecera */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <h2 style={{ color: '#0f172a', fontSize: '1.8rem', fontWeight: '800', margin: '0 0 6px 0', letterSpacing: '-0.025em' }}>
-            Folaxi<span style={{ color: '#2563eb' }}>.com</span>
-          </h2>
-          <p style={{ color: '#64748b', fontSize: '0.95rem', margin: 0, fontWeight: '500' }}>
-            {isSignUp ? 'Crea una cuenta nueva para comenzar' : 'Inicia sesión en tu cuenta'}
-          </p>
-        </div>
-
-        <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>Correo electrónico</label>
-            <input 
-              type="email" 
-              placeholder="tu@correo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{ width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.2s', background: '#f8fafc' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '600', color: '#334155' }}>Contraseña</label>
-            <input 
-              type="password" 
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{ width: '100%', padding: '12px 14px', borderRadius: '10px', border: '1px solid #cbd5e1', boxSizing: 'border-box', fontSize: '0.95rem', outline: 'none', transition: 'border-color 0.2s', background: '#f8fafc' }}
-            />
-          </div>
-
-          <button 
-            type="submit" 
-            disabled={loading}
-            style={{ 
-              width: '100%', 
-              padding: '14px', 
-              background: '#2563eb', 
-              color: '#fff', 
-              border: 'none', 
-              borderRadius: '10px', 
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              fontSize: '1rem',
-              marginTop: '6px',
-              boxShadow: '0 4px 6px -1px rgba(37, 99, 235, 0.2)',
-              transition: 'background 0.2s'
-            }}
-          >
-            {loading ? 'Procesando...' : (isSignUp ? 'Crear cuenta' : 'Iniciar Sesión')}
-          </button>
-        </form>
-
-        {message && (
-          <div style={{ marginTop: '18px', padding: '10px 14px', borderRadius: '8px', background: message.includes('exitoso') || message.includes('éxito') ? '#f0fdf4' : '#fef2f2', border: `1px solid ${message.includes('exitoso') || message.includes('éxito') ? '#bbf7d0' : '#fee2e2'}` }}>
-            <p style={{ margin: 0, textAlign: 'center', fontSize: '0.85rem', fontWeight: '500', color: message.includes('exitoso') || message.includes('éxito') ? '#166534' : '#dc2626' }}>
-              {message}
-            </p>
-          </div>
-        )}
-
-        <div style={{ textAlign: 'center', marginTop: '24px', borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
-          <button 
-            onClick={() => { setIsSignUp(!isSignUp); setMessage(''); }}
-            style={{ background: 'transparent', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600' }}
-          >
-            {isSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí'}
-          </button>
-        </div>
-
+    <div style={{ background: 'linear-gradient(135deg, #c084fc 0%, #9333ea 50%, #7e22ce 100%)', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', padding: '40px 20px', fontFamily: 'system-ui, sans-serif', color: '#fff', boxSizing: 'border-box' }}>
+      
+      {/* Cabecera superior */}
+      <div style={{ width: '100%', maxWidth: '400px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <button onClick={() => router.push('/')} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: '1.5rem', cursor: 'pointer' }}>‹</button>
       </div>
+
+      <div style={{ textAlign: 'center', width: '100%', maxWidth: '400px' }}>
+        <h1 style={{ fontSize: '3rem', fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.03em', margin: '0 0 30px 0', textShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
+          Folaxi
+        </h1>
+
+        {/* Tarjeta de Inicio de Sesión de Instagram */}
+        <div style={{ background: '#fff', borderRadius: '24px', padding: '35px 24px 24px 24px', color: '#1e293b', boxShadow: '0 20px 40px rgba(0,0,0,0.25)', position: 'relative' }}>
+          
+          {/* Círculo con icono de Instagram */}
+          <div style={{ position: 'absolute', top: '-35px', left: '50%', transform: 'translateX(-50%)', width: '70px', height: '70px', background: '#f8fafc', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #fff', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}>
+            <span style={{ fontSize: '1.8rem' }}>📸</span>
+          </div>
+
+          <form onSubmit={handleInstagramLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '10px' }}>
+            <input 
+              type="text" 
+              placeholder="Instagram username" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ padding: '14px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', color: '#000' }}
+            />
+            
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                placeholder="Instagram password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '14px 16px', borderRadius: '12px', border: '1px solid #e2e8f0', background: '#f8fafc', fontSize: '0.95rem', outline: 'none', boxSizing: 'border-box', color: '#000' }}
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                style={{ position: 'absolute', right: '14px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.1rem' }}
+              >
+                👁️
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem', color: '#64748b', textAlign: 'left', marginTop: '2px' }}>
+              <input 
+                type="checkbox" 
+                checked={saveAccount} 
+                onChange={(e) => setSaveAccount(e.target.checked)}
+                style={{ width: '18px', height: '18px', accentColor: '#9333ea', cursor: 'pointer' }}
+              />
+              <label>Guardar cuenta</label>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', color: '#000', border: 'none', padding: '16px', borderRadius: '14px', fontWeight: '800', fontSize: '1rem', cursor: 'pointer', boxShadow: '0 8px 20px rgba(245, 158, 11, 0.3)', marginTop: '6px', transition: 'transform 0.2s' }}
+            >
+              {loading ? 'Conectando...' : 'Iniciar sesión'}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* Pie de página soporte */}
+      <div style={{ textAlign: 'center', fontSize: '0.8rem', opacity: '0.85', display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '20px' }}>
+        <span>Support email: support@folaxi.com</span>
+        <span>Site: https://folaxi.com</span>
+        <span style={{ opacity: '0.6', marginTop: '2px' }}>6.0.0-R</span>
+      </div>
+
     </div>
   );
 }
