@@ -35,7 +35,7 @@ export async function POST(request) {
     }
 
     // 3. Incrementar el contador de completados en la tarea
-    const newCompletedQty = task.completed_quantity + 1;
+    const newCompletedQty = (task.completed_quantity || 0) + 1;
     const newStatus = newCompletedQty >= task.total_quantity ? 'completed' : 'active';
 
     await supabase
