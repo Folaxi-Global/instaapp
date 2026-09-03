@@ -10,8 +10,8 @@ export default function Home() {
         
         {/* Navbar superior */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '800', fontSize: '1.3rem', letterSpacing: '-0.02em' }}>
-            <span style={{ background: '#fff', color: '#9333ea', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>♥</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '800', fontSize: '1.3rem', letterSpacing: '-0.02em' }}>
+            <img src="/logo-folaxi.png" alt="Folaxi Logo" style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '8px' }} />
             Folaxi
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center', fontSize: '0.95rem' }}>
@@ -48,25 +48,24 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mockup de Celular Pro (Hero) */}
+          {/* Marco de Celular con Video Dinámico */}
           <div style={{ flex: '1 1 280px', display: 'flex', justifyContent: 'center' }}>
             <div style={{ background: '#121212', borderRadius: '40px', padding: '10px', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', width: '270px', border: '3px solid #27272a', position: 'relative' }}>
               {/* Notch / Dynamic Island simulado */}
               <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', width: '80px', height: '18px', background: '#000', borderRadius: '10px', zIndex: 5 }}></div>
-              <div style={{ background: '#fafafa', borderRadius: '32px', overflow: 'hidden', padding: '24px 16px 16px', color: '#18181b', minHeight: '440px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <div style={{ textAlign: 'center', fontWeight: '800', color: '#9333ea', fontSize: '1.2rem', marginTop: '6px' }}>Folaxi App</div>
-                
-                <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #ede9fe)', padding: '16px', borderRadius: '16px', textAlign: 'center', border: '1px solid #d8b4fe' }}>
-                  <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>📈</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#7e22ce' }}>Analítica & Crecimiento</div>
-                  <div style={{ fontSize: '0.7rem', color: '#6b21a8', marginTop: '2px' }}>Modo Activo 100% Seguro</div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center', background: '#fff', padding: '12px 8px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', fontSize: '0.7rem', fontWeight: '700', color: '#52525b' }}>
-                  <div>Seguidores</div>
-                  <div>Likes</div>
-                  <div>Insights</div>
-                </div>
+              
+              {/* Contenedor del video */}
+              <div style={{ background: '#000', borderRadius: '32px', overflow: 'hidden', height: '480px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <video 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                >
+                  <source src="/demo-app.mp4" type="video/mp4" />
+                  Tu navegador no soporta videos HTML5.
+                </video>
               </div>
             </div>
           </div>
