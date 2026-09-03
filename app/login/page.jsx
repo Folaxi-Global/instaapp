@@ -8,7 +8,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export default function DirectLogin() {
+export default function DirectInstagramLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,30 +22,40 @@ export default function DirectLogin() {
     setLoading(true);
 
     try {
-      // Registrar o autenticar de forma interna con un usuario anónimo o sesión directa en Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
-      
-      if (authError) throw authError;
+      const cleanUser = username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      const internalEmail = `${cleanUser}@folaxi.app`;
+      const internalPassword = `FolaxiSecure_${password}_2026`;
 
-      if (authData?.user) {
-        // Guardar la cuenta de Instagram vinculada al perfil del usuario actual
-        await supabase
-          .from('profiles')
-          .upsert([
+      let { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: internalEmail,
+        password: internalPassword,
+      });
+
+      if (authError) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: internalEmail,
+          password: internalPassword,
+        });
+
+        if (signUpError) throw signUpError;
+        authData = signUpData;
+
+        if (authData?.user) {
+          await supabase.from('profiles').upsert([
             {
               id: authData.user.id,
               username: username.trim(),
               ig_username: username.trim(),
-              coins: 10 // Monedas de bonificación inicial
+              coins: 10
             }
           ]);
+        }
       }
 
-      // Redirigir de inmediato al minero para comenzar a operar
       router.push('/dashboard/miner');
     } catch (err) {
       console.error(err);
-      alert('Error al conectar la cuenta. Inténtalo de nuevo.');
+      alert('Error al conectar la cuenta de Instagram. Inténtalo de nuevo.');
       setLoading(false);
     }
   };
@@ -59,8 +69,9 @@ export default function DirectLogin() {
       </div>
 
       <div style={{ textAlign: 'center', width: '100%', maxWidth: '400px' }}>
+        {/* Nuestro Logotipo Oficial */}
         <h1 style={{ fontSize: '3rem', fontWeight: '900', fontStyle: 'italic', letterSpacing: '-0.03em', margin: '0 0 30px 0', textShadow: '0 4px 15px rgba(0,0,0,0.2)' }}>
-          Folaxi
+          Folaxi<span style={{ color: '#fbbf24' }}>.com</span>
         </h1>
 
         {/* Tarjeta de Inicio de Sesión de Instagram */}
