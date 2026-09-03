@@ -3,68 +3,140 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', fontFamily: 'sans-serif', background: 'radial-gradient(circle at 50% 0%, #1e1b4b 0%, #09090b 100%)', padding: '20px' }}>
-      <div style={{ textAlign: 'center', background: 'rgba(24, 24, 27, 0.75)', backdropFilter: 'blur(16px)', padding: '48px 36px', borderRadius: '24px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)', maxWidth: '440px', width: '100%', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+    <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', background: '#f8fafc', color: '#1e293b', minHeight: '100vh', margin: 0, padding: 0, overflowX: 'hidden' }}>
+      
+      {/* Sección Hero con fondo morado/degradado vivo */}
+      <div style={{ background: 'linear-gradient(135deg, #c084fc 0%, #9333ea 50%, #7e22ce 100%)', color: '#fff', paddingBottom: '140px', position: 'relative' }}>
         
-        {/* Badge superior con gradiente estilo Instagram */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(225, 29, 72, 0.15), rgba(147, 51, 234, 0.15))', border: '1px solid rgba(225, 29, 72, 0.3)', padding: '6px 14px', borderRadius: '20px', marginBottom: '20px' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#e11d48', display: 'inline-block', boxShadow: '0 0 10px #e11d48' }}></span>
-          <span style={{ color: '#fda4af', fontSize: '0.75rem', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Sistema Activo • Social Engine</span>
+        {/* Navbar superior */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '800', fontSize: '1.3rem', letterSpacing: '-0.02em' }}>
+            <span style={{ background: '#fff', color: '#9333ea', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>♥</span>
+            Folaxi
+          </div>
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center', fontSize: '0.95rem' }}>
+            <Link href="/login" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', opacity: '0.9', transition: 'opacity 0.2s' }}>Iniciar Sesión</Link>
+            <Link href="/dashboard" style={{ background: '#fff', color: '#9333ea', padding: '10px 22px', borderRadius: '25px', textDecoration: 'none', fontWeight: 'bold', boxShadow: '0 4px 14px rgba(0,0,0,0.15)', transition: 'transform 0.2s' }}>Panel ⚡</Link>
+          </div>
         </div>
 
-        <h1 style={{ color: '#ffffff', fontSize: '2.4rem', fontWeight: '800', marginBottom: '10px', letterSpacing: '-0.03em' }}>
-          Folaxi<span style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #e11d48 50%, #9333ea 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>.com</span>
-        </h1>
-        
-        <p style={{ color: '#a1a1aa', fontSize: '0.95rem', marginBottom: '32px', lineHeight: '1.5' }}>
-          Plataforma avanzada de intercambio de tareas, minería y monetización digital para Instagram.
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <Link 
-            href="/login" 
-            style={{ 
-              padding: '14px', 
-              background: 'linear-gradient(135deg, #f59e0b 0%, #e11d48 50%, #9333ea 100%)', 
-              color: '#fff', 
-              textDecoration: 'none', 
-              borderRadius: '12px', 
-              fontWeight: '700', 
-              fontSize: '0.95rem',
-              boxShadow: '0 10px 20px -5px rgba(225, 29, 72, 0.4)',
-              transition: 'transform 0.2s, opacity 0.2s',
-              display: 'block'
-            }}
-          >
-            Iniciar Sesión / Registrarse
-          </Link>
+        {/* Contenido Hero */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', maxWidth: '1100px', margin: '30px auto 0', padding: '0 24px', gap: '50px' }}>
           
-          <Link 
-            href="/dashboard" 
-            style={{ 
-              padding: '14px', 
-              background: 'rgba(255, 255, 255, 0.05)', 
-              color: '#f4f4f5', 
-              textDecoration: 'none', 
-              borderRadius: '12px', 
-              fontWeight: '600', 
-              fontSize: '0.95rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              transition: 'background 0.2s',
-              display: 'block'
-            }}
-          >
-            Ir al Dashboard ⚡
-          </Link>
+          <div style={{ flex: '1 1 520px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(255, 255, 255, 0.2)', padding: '6px 16px', borderRadius: '20px', marginBottom: '24px', fontSize: '0.85rem', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}>
+              <span>👥</span> Join <strong style={{ fontWeight: '700' }}>over 1,000,000+</strong> users
+            </div>
+            <h1 style={{ fontSize: '3rem', fontWeight: '900', lineHeight: '1.15', marginBottom: '20px', letterSpacing: '-0.03em' }}>
+              Folaxi: Organic Growth and Analytics Engine for Instagram
+            </h1>
+            <p style={{ fontSize: '1.1rem', opacity: '0.92', marginBottom: '32px', lineHeight: '1.6' }}>
+              The safest way to analyze and grow your Instagram audience safely. No password needed.
+            </p>
+            <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <div style={{ background: '#000', color: '#fff', padding: '12px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ fontSize: '1.2rem' }}>▶</span>
+                <div style={{ fontSize: '0.7rem', textAlign: 'left', opacity: '0.8' }}>GET IT ON <div style={{ fontSize: '0.95rem', fontWeight: 'bold', opacity: '1' }}>Google Play</div></div>
+              </div>
+              <div style={{ background: '#000', color: '#fff', padding: '12px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ fontSize: '1.2rem' }}>🤖</span>
+                <div style={{ fontSize: '0.7rem', textAlign: 'left', opacity: '0.8' }}>DIRECT DOWNLOAD <div style={{ fontSize: '0.95rem', fontWeight: 'bold', opacity: '1' }}>.APK FILE</div></div>
+              </div>
+            </div>
+            <div style={{ marginTop: '24px', fontSize: '0.85rem', opacity: '0.85', fontWeight: '500' }}>
+              Support: support@folaxi.com &bull; Version: 6.0.0
+            </div>
+          </div>
+
+          {/* Mockup de Celular Pro (Hero) */}
+          <div style={{ flex: '1 1 280px', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ background: '#121212', borderRadius: '40px', padding: '10px', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', width: '270px', border: '3px solid #27272a', position: 'relative' }}>
+              {/* Notch / Dynamic Island simulado */}
+              <div style={{ position: 'absolute', top: '16px', left: '50%', transform: 'translateX(-50%)', width: '80px', height: '18px', background: '#000', borderRadius: '10px', zIndex: 5 }}></div>
+              <div style={{ background: '#fafafa', borderRadius: '32px', overflow: 'hidden', padding: '24px 16px 16px', color: '#18181b', minHeight: '440px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ textAlign: 'center', fontWeight: '800', color: '#9333ea', fontSize: '1.2rem', marginTop: '6px' }}>Folaxi App</div>
+                
+                <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #ede9fe)', padding: '16px', borderRadius: '16px', textAlign: 'center', border: '1px solid #d8b4fe' }}>
+                  <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>📈</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#7e22ce' }}>Analítica & Crecimiento</div>
+                  <div style={{ fontSize: '0.7rem', color: '#6b21a8', marginTop: '2px' }}>Modo Activo 100% Seguro</div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center', background: '#fff', padding: '12px 8px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', fontSize: '0.7rem', fontWeight: '700', color: '#52525b' }}>
+                  <div>Seguidores</div>
+                  <div>Likes</div>
+                  <div>Insights</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div style={{ marginTop: '32px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '20px' }}>
-          <p style={{ color: '#71717a', fontSize: '0.8rem', margin: 0 }}>
-            Infraestructura optimizada en Vercel & Supabase
-          </p>
+        {/* Curva inferior estilizada */}
+        <div style={{ position: 'absolute', bottom: '-1px', left: 0, width: '100%', overflow: 'hidden', lineHeight: 0 }}>
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" style={{ position: 'relative', display: 'block', width: 'calc(100% + 1.3px)', height: '70px', fill: '#f8fafc' }}>
+            <path d="M0,0 C150,90 350,-40 500,60 C650,160 900,10 1200,40 L1200,120 L0,120 Z"></path>
+          </svg>
         </div>
-
       </div>
+
+      {/* Sección Promo Code (Tarjeta Flotante) */}
+      <div style={{ maxWidth: '650px', margin: '-50px auto 40px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
+        <div style={{ background: '#fff', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 40px rgba(147, 51, 234, 0.08)', textAlign: 'center', border: '1px solid #e9d5ff' }}>
+          <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#9333ea', fontWeight: '800', marginBottom: '8px' }}>Secret Promo Code</div>
+          <h3 style={{ margin: '0 0 6px', fontSize: '1.5rem', fontWeight: '800', color: '#09090b' }}>Free Coins Promocode</h3>
+          <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '20px', fontWeight: '500' }}>Limited Bonus Code: +1000 Coins</p>
+          <button style={{ background: 'linear-gradient(135deg, #a855f7, #9333ea)', color: '#fff', border: 'none', padding: '12px 35px', borderRadius: '30px', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 8px 20px rgba(147, 51, 234, 0.3)', transition: 'transform 0.2s' }}>
+            Reveal Code 🎁
+          </button>
+        </div>
+      </div>
+
+      {/* Why is Folaxi the Market Leader? */}
+      <div style={{ maxWidth: '1000px', margin: '70px auto', padding: '0 20px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '35px', letterSpacing: '-0.02em', color: '#09090b' }}>Why is Folaxi the Market Leader?</h2>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '15px', textAlign: 'left', marginBottom: '40px' }}>
+          <div style={{ background: '#fff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>✅ Advanced Algorithms</div>
+          <div style={{ background: '#fff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>⚡ Instant Delivery</div>
+          <div style={{ background: '#fff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>🎁 Daily Bonus Codes</div>
+          <div style={{ background: '#fff', padding: '18px 20px', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>🔒 Safe & Secure</div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          <div style={{ background: '#fff', padding: '35px 25px', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>📈</div>
+            <h4 style={{ fontSize: '1.2rem', fontWeight: '800', marginBottom: '10px', color: '#09090b' }}>Organic Growth</h4>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>Increase your follower count to rank higher in search results naturally.</p>
+          </div>
+          <div style={{ background: '#fff', padding: '35px 25px', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>👥</div>
+            <h4 style={{ fontSize: '1.2rem', fontWeight: '800', marginBottom: '10px', color: '#09090b' }}>Multi Account Support</h4>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>Use multiple secondary accounts to earn credits faster.</p>
+          </div>
+          <div style={{ background: '#fff', padding: '35px 25px', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>🛡️</div>
+            <h4 style={{ fontSize: '1.2rem', fontWeight: '800', marginBottom: '10px', color: '#09090b' }}>Easy for Beginners</h4>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>No technical skills required. Intuitive interface for everyone.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer style={{ background: '#09090b', color: '#a1a1aa', padding: '50px 20px', marginTop: '100px', fontSize: '0.9rem', borderTop: '1px solid #27272a' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '30px' }}>
+          <div>
+            <div style={{ color: '#fff', fontWeight: '800', fontSize: '1.2rem', marginBottom: '12px' }}>Folaxi Official</div>
+            <p style={{ margin: 0, opacity: '0.8' }}>Official Folaxi.com App 2026. #1 Growth Utility.</p>
+          </div>
+          <div>
+            <div style={{ color: '#fff', fontWeight: '800', marginBottom: '10px' }}>Support & Contact</div>
+            <p style={{ margin: 0, opacity: '0.8' }}>support@folaxi.com</p>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }
