@@ -11,8 +11,8 @@ export default function Home() {
         {/* Navbar superior */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px 40px', maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: '800', fontSize: '1.3rem', letterSpacing: '-0.02em' }}>
-            <img src="/logo-folaxi.png" alt="Folaxi Logo" style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '8px' }} />
-            Folaxi
+            <img src="/logo-folaxi.jpg" alt="Folaxi Logo" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />
+            Folaxi.com
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center', fontSize: '0.95rem' }}>
             <Link href="/login" style={{ color: '#fff', textDecoration: 'none', fontWeight: '600', opacity: '0.9', transition: 'opacity 0.2s' }}>Iniciar Sesión</Link>
@@ -111,7 +111,7 @@ export default function Home() {
           </div>
           <div style={{ background: '#fff', padding: '35px 25px', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '15px' }}>👥</div>
-            <h4 style={{ fontSize: '1.2rem', fontWeight: '800', marginBottom: '10px', color: '#09090b' }}>Multi Account Support</h4>
+            <h4 style={{ fontSize: '1.2rem', fontWeight: '800', marginBottom: '10px', color: '#090`0b' }}>Multi Account Support</h4>
             <p style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5' }}>Use multiple secondary accounts to earn credits faster.</p>
           </div>
           <div style={{ background: '#fff', padding: '35px 25px', borderRadius: '20px', border: '1px solid #e2e8f0', textAlign: 'center', boxShadow: '0 10px 30px rgba(0,0,0,0.03)' }}>
