@@ -9,46 +9,55 @@ export async function POST(request) {
     }
 
     const cleanUser = username.replace('@', '').trim();
-    let avatarUrl = '';
 
-    try {
-      // 1. Petición simulando la app o navegador móvil para autenticar
-      // Nota técnica: En sistemas de alto rendimiento de minería, aquí se realiza el POST cifrado a i.instagram.com/api/v1/accounts/login/
-      const response = await fetch(`https://www.instagram.com/${cleanUser}/`, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 300.0.0.32.109',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-      });
+    // Simulamos la cabecera y el intento de autenticación móvil contra la API de Instagram
+    // En las apps de minería, un login incorrecto devuelve errores de credenciales o de checkpoint de seguridad
+    const loginPayload = new URLSearchParams({
+      username: cleanUser,
+      enc_password: `#PWD_INSTAGRAM_BROWSER:0:${Date.now()}:${password}`,
+      queryParams: '{}',
+      optIntoOneTap: 'false'
+    });
 
-      // Si Instagram bloquea la IP o detecta credenciales inválidas directas en pasarelas de login
-      if (response.status === 401 || response.status === 403) {
-        return NextResponse.json({ 
-          success: false, 
-          message: 'Contraseña incorrecta o cuenta protegida por seguridad de Instagram.' 
-        }, { status: 401 });
-      }
+    const response = await fetch('https://www.instagram.com/api/v1/accounts/login/ajax/', {
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 300.0.0.32.109',
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': 'https://www.instagram.com/accounts/login/',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: loginPayload
+    });
 
-      const html = await response.text();
+    const data = await response.json();
 
-      // Validación extra: Si el HTML indica un error de login o perfil inexistente
-      if (html.includes('The password you entered is incorrect') || html.includes('Por favor, ingresa una contraseña válida')) {
-        return NextResponse.json({ 
-          success: false, 
-          message: 'La contraseña ingresada es incorrecta.' 
-        }, { status: 401 });
-      }
-
-      // 2. Extraer la foto de perfil real del HTML público
-      const match = html.match(/<meta property="og:image" content="([^"]+)"/);
-      if (match && match[1]) {
-        avatarUrl = match[1];
-      }
-    } catch (err) {
-      console.error('Error en validación:', err);
+    // Si Instagram rechaza las credenciales
+    if (data.authenticated === false || data.error_type === 'bad_credential' || data.message === 'bad_password') {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'La contraseña ingresada es incorrecta.' 
+      }, { status: 401 });
     }
 
-    // Si no se pudo obtener del HTML directo, usamos respaldo seguro con la red de imágenes
+    // Si la cuenta requiere verificación de dos pasos o checkpoint de seguridad
+    if (data.checkpoint_url || data.two_factor_required) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'La cuenta requiere verificación de seguridad (2FA).' 
+      }, { status: 401 });
+    }
+
+    // Si el login es exitoso, extraemos la foto real del perfil devuelta por la sesión o el perfil público
+    let avatarUrl = data.logged_in_user?.profile_pic_url;
+
+    if (!avatarUrl) {
+      const profileRes = await fetch(`https://www.instagram.com/${cleanUser}/`);
+      const html = await profileRes.text();
+      const match = html.match(/<meta property="og:image" content="([^"]+)"/);
+      if (match && match[1]) avatarUrl = match[1];
+    }
+
     if (!avatarUrl) {
       avatarUrl = `https://images.weserv.nl/?url=https://www.instagram.com/${cleanUser}/profilepic&n=-1`;
     }
