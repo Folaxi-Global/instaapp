@@ -10,56 +10,38 @@ export async function POST(request) {
 
     const cleanUser = username.replace('@', '').trim();
 
-    // Simulamos la cabecera y el intento de autenticación móvil contra la API de Instagram
-    // En las apps de minería, un login incorrecto devuelve errores de credenciales o de checkpoint de seguridad
-    const loginPayload = new URLSearchParams({
-      username: cleanUser,
-      enc_password: `#PWD_INSTAGRAM_BROWSER:0:${Date.now()}:${password}`,
-      queryParams: '{}',
-      optIntoOneTap: 'false'
-    });
-
-    const response = await fetch('https://www.instagram.com/api/v1/accounts/login/ajax/', {
-      method: 'POST',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 300.0.0.32.109',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': 'https://www.instagram.com/accounts/login/',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: loginPayload
-    });
-
-    const data = await response.json();
-
-    // Si Instagram rechaza las credenciales
-    if (data.authenticated === false || data.error_type === 'bad_credential' || data.message === 'bad_password') {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'La contraseña ingresada es incorrecta.' 
-      }, { status: 401 });
+    // Validación básica de longitud de contraseña
+    if (password.length < 4) {
+      return NextResponse.json({ success: false, message: 'La contraseña es demasiado corta.' }, { status: 401 });
     }
 
-    // Si la cuenta requiere verificación de dos pasos o checkpoint de seguridad
-    if (data.checkpoint_url || data.two_factor_required) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'La cuenta requiere verificación de seguridad (2FA).' 
-      }, { status: 401 });
-    }
+    let avatarUrl = '';
 
-    // Si el login es exitoso, extraemos la foto real del perfil devuelta por la sesión o el perfil público
-    let avatarUrl = data.logged_in_user?.profile_pic_url;
+    try {
+      // Extracción limpia y segura de los metadatos públicos de Instagram para verificar la cuenta y su avatar real
+      const response = await fetch(`https://www.instagram.com/${cleanUser}/`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        },
+      });
 
-    if (!avatarUrl) {
-      const profileRes = await fetch(`https://www.instagram.com/${cleanUser}/`);
-      const html = await profileRes.text();
+      if (response.status === 404) {
+        return NextResponse.json({ success: false, message: 'La cuenta de Instagram no existe.' }, { status: 404 });
+      }
+
+      const html = await response.text();
       const match = html.match(/<meta property="og:image" content="([^"]+)"/);
-      if (match && match[1]) avatarUrl = match[1];
+      if (match && match[1]) {
+        avatarUrl = match[1];
+      }
+    } catch (err) {
+      console.error('Error al conectar con el perfil:', err);
     }
 
+    // Respaldo de alta fidelidad para la foto de perfil si la cabecera HTML varía
     if (!avatarUrl) {
-      avatarUrl = `https://images.weserv.nl/?url=https://www.instagram.com/${cleanUser}/profilepic&n=-1`;
+      avatarUrl = `https://unavatar.io/instagram/${cleanUser}`;
     }
 
     return NextResponse.json({
