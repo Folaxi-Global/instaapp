@@ -5,6 +5,7 @@ export default function TopFollowMiner() {
   const [coins, setCoins] = useState(104);
   const [isRunning, setIsRunning] = useState(true);
   const [status, setStatus] = useState('Operativo ⚡');
+  const [progress, setProgress] = useState(0);
   const [floatingCoins, setFloatingCoins] = useState([]);
   const [userData, setUserData] = useState({
     username: 'vertensglobal',
@@ -24,7 +25,14 @@ export default function TopFollowMiner() {
 
   useEffect(() => {
     let interval;
+    let progressInterval;
+
     if (isRunning) {
+      setProgress(0);
+      progressInterval = setInterval(() => {
+        setProgress(prev => (prev >= 100 ? 0 : prev + 5));
+      }, 100);
+
       interval = setInterval(() => {
         if (Math.random() > 0.85) {
           setStatus('Pausa de seguridad...');
@@ -48,15 +56,21 @@ export default function TopFollowMiner() {
         }, 1200);
 
       }, 2000);
+    } else {
+      setProgress(0);
     }
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(progressInterval);
+    };
   }, [isRunning]);
 
   return (
-    <div style={{ maxWidth: '480px', margin: '30px auto', padding: '20px', fontFamily: 'system-ui, sans-serif', textAlign: 'center' }}>
+    <div style={{ maxWidth: '480px', margin: '20px auto', padding: '20px', fontFamily: 'system-ui, sans-serif', textAlign: 'center' }}>
       
       {/* Tarjeta de Perfil con Avatar Inteligente */}
-      <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 10px 30px rgba(131, 58, 180, 0.12)', border: '1px solid #f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '25px' }}>
+      <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 10px 30px rgba(131, 58, 180, 0.12)', border: '1px solid #f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '3px', background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', borderRadius: '50%' }}>
             <img 
@@ -66,44 +80,49 @@ export default function TopFollowMiner() {
                 e.target.onerror = null;
                 e.target.src = `https://ui-avatars.com/api/?name=${userData.username}&background=833ab4&color=fff&bold=true`;
               }}
-              style={{ width: '55px', height: '55px', borderRadius: '50%', objectFit: 'cover', display: 'block', background: '#fff' }} 
+              style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', display: 'block', background: '#fff' }} 
             />
           </div>
           <div style={{ textAlign: 'left' }}>
-            <div style={{ fontWeight: '900', color: '#0f172a', fontSize: '1.05rem' }}>@{userData.username}</div>
+            <div style={{ fontWeight: '900', color: '#0f172a', fontSize: '1rem' }}>@{userData.username}</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: status.includes('Operativo') ? '#22c55e' : '#eab308', display: 'inline-block' }}></span>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '700' }}>{status}</span>
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', background: status.includes('Operativo') ? '#22c55e' : '#eab308', display: 'inline-block' }}></span>
+              <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: '700' }}>{status}</span>
             </div>
           </div>
         </div>
-        <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #fce7f3)', color: '#9333ea', padding: '8px 14px', borderRadius: '12px', fontWeight: '800', fontSize: '0.85rem' }}>
+        <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #fce7f3)', color: '#9333ea', padding: '6px 12px', borderRadius: '12px', fontWeight: '800', fontSize: '0.8rem' }}>
           Activo
         </div>
       </div>
 
-      {/* Minero Automático */}
-      <div style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)', borderRadius: '30px', padding: '45px 20px', color: '#fff', boxShadow: '0 20px 40px rgba(131, 58, 180, 0.35)', position: 'relative', overflow: 'hidden', marginBottom: '25px' }}>
+      {/* Minero Automático con Barra de Progreso */}
+      <div style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)', borderRadius: '30px', padding: '35px 20px', color: '#fff', boxShadow: '0 20px 40px rgba(131, 58, 180, 0.35)', position: 'relative', overflow: 'hidden', marginBottom: '20px' }}>
         
         {floatingCoins.map(coin => (
-          <div key={coin.id} style={{ position: 'absolute', bottom: '90px', left: `calc(50% + ${coin.x}px)`, animation: 'floatUp 1.2s ease-out forwards', fontWeight: '900', fontSize: '1.5rem', color: '#fde047', pointerEvents: 'none', textShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
+          <div key={coin.id} style={{ position: 'absolute', bottom: '110px', left: `calc(50% + ${coin.x}px)`, animation: 'floatUp 1.2s ease-out forwards', fontWeight: '900', fontSize: '1.4rem', color: '#fde047', pointerEvents: 'none', textShadow: '0 2px 6px rgba(0,0,0,0.4)' }}>
             +1 🪙
           </div>
         ))}
 
-        <div style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px', opacity: 0.95, fontWeight: '800' }}>Créditos Acumulados</div>
-        <div style={{ fontSize: '4rem', fontWeight: '900', margin: '15px 0', textShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>{coins} 🪙</div>
+        <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1.5px', opacity: 0.95, fontWeight: '800' }}>Créditos Acumulados</div>
+        <div style={{ fontSize: '3.5rem', fontWeight: '900', margin: '10px 0', textShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>{coins} 🪙</div>
         
+        {/* Barra de Progreso Dinámica */}
+        <div style={{ width: '100%', background: 'rgba(255,255,255,0.25)', height: '8px', borderRadius: '10px', margin: '20px 0 25px', overflow: 'hidden', backdropFilter: 'blur(4px)' }}>
+          <div style={{ width: `${progress}%`, height: '100%', background: '#fff', borderRadius: '10px', transition: 'width 0.1s linear', boxShadow: '0 0 10px rgba(255,255,255,0.8)' }}></div>
+        </div>
+
         <button 
           onClick={() => setIsRunning(!isRunning)}
           style={{ 
             background: isRunning ? '#1e293b' : '#ffffff', 
             color: isRunning ? '#fff' : '#833ab4', 
             border: 'none', 
-            padding: '15px 35px', 
+            padding: '12px 30px', 
             borderRadius: '25px', 
             fontWeight: '900', 
-            fontSize: '1.05rem', 
+            fontSize: '1rem', 
             cursor: 'pointer', 
             boxShadow: '0 10px 25px rgba(0,0,0,0.25)'
           }}
@@ -115,7 +134,7 @@ export default function TopFollowMiner() {
       <style jsx>{`
         @keyframes floatUp {
           0% { transform: translateY(0) scale(0.8); opacity: 1; }
-          100% { transform: translateY(-90px) scale(1.2); opacity: 0; }
+          100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
         }
       `}</style>
     </div>
