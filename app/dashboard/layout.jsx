@@ -19,6 +19,7 @@ export default function DashboardLayout({ children }) {
 
   const handleLogout = () => {
     localStorage.removeItem('folaxi_instagram_user');
+    localStorage.removeItem('folaxi_instagram_avatar');
     router.push('/dashboard/connect');
   };
 
@@ -26,14 +27,14 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div style={{ minHeight: '100vh', background: '#fdf4ff', fontFamily: 'system-ui, sans-serif' }}>
-      {/* Barra de Navegación Superior */}
-      <header style={{ background: '#ffffff', borderBottom: '1px solid #f3e8ff', padding: '14px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 20px rgba(147, 51, 234, 0.05)', position: 'sticky', top: 0, zIndex: 50 }}>
+      {/* Barra de Navegación Superior con Identidad Visual de Instagram */}
+      <header style={{ background: '#ffffff', borderBottom: '1px solid #f3e8ff', padding: '14px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 4px 20px rgba(131, 58, 180, 0.08)', position: 'sticky', top: 0, zIndex: 50 }}>
         
         {/* Logo y Enlaces */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
           <Link href="/dashboard/miner" style={{ textDecoration: 'none' }}>
             <h2 style={{ margin: 0, fontSize: '1.3rem', color: '#0f172a', fontWeight: '900', letterSpacing: '-0.025em' }}>
-              Folaxi<span style={{ color: '#9333ea' }}>.com</span>
+              Folaxi<span style={{ background: 'linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>.com</span>
             </h2>
           </Link>
           
@@ -42,31 +43,33 @@ export default function DashboardLayout({ children }) {
               href="/dashboard/miner" 
               style={{ 
                 textDecoration: 'none', 
-                color: isActive('/dashboard/miner') ? '#9333ea' : '#64748b', 
+                color: isActive('/dashboard/miner') ? '#fff' : '#64748b', 
                 fontSize: '0.9rem', 
-                fontWeight: isActive('/dashboard/miner') ? '700' : '500',
+                fontWeight: isActive('/dashboard/miner') ? '800' : '500',
                 padding: '8px 14px',
                 borderRadius: '10px',
-                background: isActive('/dashboard/miner') ? '#f3e8ff' : 'transparent',
+                background: isActive('/dashboard/miner') ? 'linear-gradient(135deg, #833ab4, #fd1d1d)' : 'transparent',
+                boxShadow: isActive('/dashboard/miner') ? '0 4px 12px rgba(131, 58, 180, 0.3)' : 'none',
                 transition: 'all 0.2s'
               }}
             >
-              🪙 Minero
+              🪙 Minero Activo
             </Link>
             <Link 
               href="/dashboard/campaigns/new" 
               style={{ 
                 textDecoration: 'none', 
-                color: isActive('/dashboard/campaigns/new') ? '#9333ea' : '#64748b', 
+                color: isActive('/dashboard/campaigns/new') ? '#fff' : '#64748b', 
                 fontSize: '0.9rem', 
-                fontWeight: isActive('/dashboard/campaigns/new') ? '700' : '500',
+                fontWeight: isActive('/dashboard/campaigns/new') ? '800' : '500',
                 padding: '8px 14px',
                 borderRadius: '10px',
-                background: isActive('/dashboard/campaigns/new') ? '#f3e8ff' : 'transparent',
+                background: isActive('/dashboard/campaigns/new') ? 'linear-gradient(135deg, #833ab4, #fd1d1d)' : 'transparent',
+                boxShadow: isActive('/dashboard/campaigns/new') ? '0 4px 12px rgba(131, 58, 180, 0.3)' : 'none',
                 transition: 'all 0.2s'
               }}
             >
-              📈 Campaña
+              📈 Crear Campaña
             </Link>
           </nav>
         </div>
@@ -74,7 +77,7 @@ export default function DashboardLayout({ children }) {
         {/* Usuario y Botón de Salir / Cambiar Cuenta */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           {instagramUser && (
-            <span style={{ fontSize: '0.9rem', color: '#7e22ce', fontWeight: '800', background: '#f3e8ff', padding: '6px 12px', borderRadius: '20px' }}>
+            <span style={{ fontSize: '0.9rem', color: '#833ab4', fontWeight: '800', background: '#f3e8ff', padding: '6px 14px', borderRadius: '20px', border: '1px solid #e9d5ff' }}>
               @{instagramUser}
             </span>
           )}
@@ -96,17 +99,7 @@ export default function DashboardLayout({ children }) {
         </div>
       </header>
 
-      {/* Barra móvil rápida inferior o secundaria */}
-      <div style={{ background: '#ffffff', borderBottom: '1px solid #f3e8ff', padding: '10px 16px', display: 'flex', justifyContent: 'space-around', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-        <Link href="/dashboard/miner" style={{ textDecoration: 'none', color: isActive('/dashboard/miner') ? '#9333ea' : '#64748b', fontSize: '0.9rem', fontWeight: '700' }}>
-          🪙 Minero Activo
-        </Link>
-        <Link href="/dashboard/campaigns/new" style={{ textDecoration: 'none', color: isActive('/dashboard/campaigns/new') ? '#9333ea' : '#64748b', fontSize: '0.9rem', fontWeight: '700' }}>
-          📈 Crear Campaña
-        </Link>
-      </div>
-
-      {/* Contenido */}
+      {/* Contenido Principal */}
       <main style={{ padding: '20px 0 40px 0' }}>
         {children}
       </main>
