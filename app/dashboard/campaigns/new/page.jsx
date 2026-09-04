@@ -106,6 +106,19 @@ export default function NewCampaignPage() {
     }
   };
 
+  // Textos y ejemplos de ayuda dinámicos según lo que el usuario elija
+  const getHelperText = () => {
+    if (type === 'follow') {
+      return '💡 Pega el enlace de tu perfil de Instagram o escribe tu nombre de usuario (ej: https://instagram.com/tu_cuenta)';
+    }
+    return '💡 Pega el enlace directo de tu Reel, video o publicación donde quieres recibir las interacciones.';
+  };
+
+  const getPlaceholder = () => {
+    if (type === 'follow') return 'https://instagram.com/tu_cuenta';
+    return 'https://instagram.com/reel/...';
+  };
+
   return (
     <div style={{ padding: '24px', maxWidth: '480px', margin: '30px auto', fontFamily: 'system-ui, sans-serif', background: '#ffffff', borderRadius: '24px', boxShadow: '0 15px 35px rgba(131, 58, 180, 0.08)', border: '1px solid #f3e8ff', color: '#1e293b' }}>
       <h2 style={{ marginBottom: '8px', color: '#0f172a', fontSize: '1.5rem', fontWeight: '900' }}>Crear Campaña 📈</h2>
@@ -115,28 +128,31 @@ export default function NewCampaignPage() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tipo de interacción</label>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>¿Qué deseas conseguir?</label>
           <select 
             value={type} 
             onChange={(e) => setType(e.target.value)}
             style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '2px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', fontSize: '0.95rem', fontWeight: '600', outline: 'none' }}
           >
-            <option value="view">Vistas (Views)</option>
-            <option value="follow">Seguidores (Follows)</option>
-            <option value="like">Me gusta (Likes)</option>
+            <option value="view">👁️ Vistas para Reels o Videos</option>
+            <option value="follow">👤 Seguidores para tu Perfil</option>
+            <option value="like">❤️ Me gusta (Likes)</option>
           </select>
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Enlace objetivo (URL)</label>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Enlace de Instagram</label>
           <input 
-            type="url" 
-            placeholder="https://instagram.com/p/..." 
+            type="text" 
+            placeholder={getPlaceholder()}
             value={targetUrl}
             onChange={(e) => setTargetUrl(e.target.value)}
             required
             style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '2px solid #e2e8f0', background: '#f8fafc', boxSizing: 'border-box', color: '#0f172a', fontSize: '0.95rem', fontWeight: '600', outline: 'none' }}
           />
+          <span style={{ display: 'block', fontSize: '0.78rem', color: '#64748b', marginTop: '6px', lineHeight: '1.4' }}>
+            {getHelperText()}
+          </span>
         </div>
 
         <div>
@@ -152,7 +168,7 @@ export default function NewCampaignPage() {
         </div>
 
         <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #fce7f3)', padding: '16px', borderRadius: '14px', fontSize: '0.95rem', color: '#7e22ce', border: '1px solid #e9d5ff', fontWeight: '700' }}>
-          Costo total: <strong style={{ fontSize: '1.1rem' }}>{totalQuantity * rewardCoins} 🪙</strong>
+          Costo total de la campaña: <strong style={{ fontSize: '1.1rem' }}>{totalQuantity * rewardCoins} 🪙</strong>
         </div>
 
         <button 
