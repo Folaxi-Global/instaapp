@@ -1,13 +1,6 @@
 'use client';
-import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const router = useRouter();
-
-  const handleOpenApp = () => {
-    router.push('/dashboard/miner');
-  };
-
   return (
     <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif', background: '#f8fafc', color: '#1e293b', minHeight: '100vh', margin: 0, padding: 0, overflowX: 'hidden' }}>
       
@@ -20,12 +13,6 @@ export default function Home() {
             <img src="/logo-folaxi.jpg" alt="Folaxi Logo" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '8px' }} />
             Folaxi.com
           </div>
-          <button 
-            onClick={handleOpenApp}
-            style={{ background: '#fff', color: '#9333ea', border: 'none', padding: '10px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-          >
-            Abrir App ⚡
-          </button>
         </div>
 
         {/* Contenido Hero */}
@@ -42,13 +29,14 @@ export default function Home() {
               The safest way to analyze and grow your Instagram audience safely. No password needed.
             </p>
             <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-              <button onClick={handleOpenApp} style={{ background: '#000', color: '#fff', padding: '12px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'left' }}>
-                <span style={{ fontSize: '1.2rem' }}>⚡</span>
-                <div>
-                  <div style={{ fontSize: '0.7rem', opacity: '0.8' }}>ACCESO DIRECTO</div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>Iniciar Minería</div>
-                </div>
-              </button>
+              <a href="/app-release.apk" download style={{ textDecoration: 'none', background: '#000', color: '#fff', padding: '12px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ fontSize: '1.2rem' }}>▶</span>
+                <div style={{ fontSize: '0.7rem', textAlign: 'left', opacity: '0.8' }}>GET IT ON <div style={{ fontSize: '0.95rem', fontWeight: 'bold', opacity: '1', color: '#fff' }}>Google Play</div></div>
+              </a>
+              <a href="/app-release.apk" download style={{ textDecoration: 'none', background: '#000', color: '#fff', padding: '12px 22px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 10px 25px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ fontSize: '1.2rem' }}>🤖</span>
+                <div style={{ fontSize: '0.7rem', textAlign: 'left', opacity: '0.8' }}>DIRECT DOWNLOAD <div style={{ fontSize: '0.95rem', fontWeight: 'bold', opacity: '1', color: '#fff' }}>.APK FILE</div></div>
+              </a>
             </div>
             <div style={{ marginTop: '24px', fontSize: '0.85rem', opacity: '0.85', fontWeight: '500' }}>
               Support: support@folaxi.com &bull; Version: 6.0.0
@@ -84,15 +72,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Sección Promo Code */}
+      {/* Sección Promo Code (Tarjeta Flotante) */}
       <div style={{ maxWidth: '650px', margin: '-50px auto 40px', padding: '0 20px', position: 'relative', zIndex: 10 }}>
         <div style={{ background: '#fff', borderRadius: '20px', padding: '30px', boxShadow: '0 20px 40px rgba(147, 51, 234, 0.08)', textAlign: 'center', border: '1px solid #e9d5ff' }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#9333ea', fontWeight: '800', marginBottom: '8px' }}>Secret Promo Code</div>
           <h3 style={{ margin: '0 0 6px', fontSize: '1.5rem', fontWeight: '800', color: '#09090b' }}>Free Coins Promocode</h3>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '20px', fontWeight: '500' }}>Limited Bonus Code: +1000 Coins</p>
-          <button onClick={handleOpenApp} style={{ background: 'linear-gradient(135deg, #a855f7, #9333ea)', color: '#fff', border: 'none', padding: '12px 35px', borderRadius: '30px', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 8px 20px rgba(147, 51, 234, 0.3)' }}>
-            Reveal Code 🎁
-          </button>
+          <a href="/app-release.apk" download style={{ textDecoration: 'none', display: 'inline-block', background: 'linear-gradient(135deg, #a855f7, #9333ea)', color: '#fff', border: 'none', padding: '12px 35px', borderRadius: '30px', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', boxShadow: '0 8px 20px rgba(147, 51, 234, 0.3)' }}>
+            Download App to Unlock 🎁
+          </a>
         </div>
       </div>
 
