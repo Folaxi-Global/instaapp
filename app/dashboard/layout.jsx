@@ -1,46 +1,28 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
 export default function DashboardLayout({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [instagramUser, setInstagramUser] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    async function checkUser() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        router.push('/login');
-      } else {
-        setUser(session.user);
-        setLoading(false);
-      }
+    // Verificamos si ya hay una cuenta de Instagram registrada localmente en la app
+    const savedUser = localStorage.getItem('folaxi_instagram_user');
+    if (!savedUser) {
+      // Si no ha registrado su cuenta, lo mandamos a la pantalla de bienvenida/registro de Instagram
+      router.push('/dashboard/connect');
+    } else {
+      setInstagramUser(savedUser);
     }
-    checkUser();
   }, [router]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
+  const handleLogout = () => {
+    localStorage.removeItem('folaxi_instagram_user');
+    router.push('/dashboard/connect');
   };
-
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'sans-serif', background: '#f8fafc', color: '#4b5563' }}>
-        <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>Verificando acceso a Folaxi...</p>
-      </div>
-    );
-  }
 
   const isActive = (path) => pathname === path;
 
@@ -58,7 +40,7 @@ export default function DashboardLayout({ children }) {
           </Link>
           
           {/* Navegación desktop */}
-          <nav style={{ display: 'flex', gap: '8px', '@media (max-width: 768px)': { display: 'none' } }}>
+          <nav style={{ display: 'flex', gap: '8px' }}>
             <Link 
               href="/dashboard" 
               style={{ 
@@ -107,11 +89,13 @@ export default function DashboardLayout({ children }) {
           </nav>
         </div>
 
-        {/* Acciones de Usuario y Menú Móvil */}
+        {/* Acciones de Usuario y Salir */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500', display: window?.innerWidth < 768 ? 'none' : 'block' }}>
-            {user?.email}
-          </span>
+          {instagramUser && (
+            <span style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '600' }}>
+              @{instagramUser}
+            </span>
+          )}
           <button 
             onClick={handleLogout}
             style={{ 
@@ -122,11 +106,10 @@ export default function DashboardLayout({ children }) {
               borderRadius: '8px', 
               cursor: 'pointer', 
               fontWeight: '600', 
-              fontSize: '0.85rem',
-              transition: 'background 0.2s'
+              fontSize: '0.85rem'
             }}
           >
-            Cerrar Sesión
+            Cambiar Cuenta
           </button>
         </div>
       </header>
@@ -144,7 +127,7 @@ export default function DashboardLayout({ children }) {
         </Link>
       </div>
 
-      {/* Contenido dinámico de las subpáginas */}
+      {/* Contenido dinámico */}
       <main style={{ padding: '20px 0 40px 0' }}>
         {children}
       </main>
