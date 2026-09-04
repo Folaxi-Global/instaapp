@@ -2,20 +2,21 @@
 import { useState, useEffect } from 'react';
 
 export default function TopFollowMiner() {
-  const [coins, setCoins] = useState(120);
-  const [isRunning, setIsRunning] = useState(false);
+  const [coins, setCoins] = useState(104);
+  const [isRunning, setIsRunning] = useState(true);
   const [status, setStatus] = useState('Operativo ⚡');
   const [floatingCoins, setFloatingCoins] = useState([]);
   const [userData, setUserData] = useState({
-    username: 'usuariotest',
+    username: 'vertensglobal',
     avatar: ''
   });
 
   useEffect(() => {
     const savedUser = localStorage.getItem('folaxi_instagram_user') || 'vertensglobal';
-    const savedAvatar = localStorage.getItem('folaxi_instagram_avatar') || `https://unavatar.io/instagram/${savedUser}`;
+    const cleanUser = savedUser.replace('@', '').trim();
+    const savedAvatar = localStorage.getItem('folaxi_instagram_avatar') || `https://unavatar.io/instagram/${cleanUser}`;
     
-    setUserData({ username: savedUser, avatar: savedAvatar });
+    setUserData({ username: cleanUser, avatar: savedAvatar });
 
     const savedCoins = localStorage.getItem('folaxi_coins');
     if (savedCoins) setCoins(parseInt(savedCoins));
@@ -26,7 +27,7 @@ export default function TopFollowMiner() {
     if (isRunning) {
       interval = setInterval(() => {
         if (Math.random() > 0.85) {
-          setStatus('Pausa de seguridad (Anti-Baneo)...');
+          setStatus('Pausa de seguridad...');
           setTimeout(() => setStatus('Operativo ⚡'), 3000);
           return;
         }
@@ -54,13 +55,17 @@ export default function TopFollowMiner() {
   return (
     <div style={{ maxWidth: '480px', margin: '30px auto', padding: '20px', fontFamily: 'system-ui, sans-serif', textAlign: 'center' }}>
       
-      {/* Tarjeta de Perfil Real */}
+      {/* Tarjeta de Perfil con Avatar Inteligente */}
       <div style={{ background: '#ffffff', borderRadius: '24px', padding: '20px', boxShadow: '0 10px 30px rgba(131, 58, 180, 0.12)', border: '1px solid #f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '25px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ padding: '3px', background: 'linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)', borderRadius: '50%' }}>
             <img 
               src={userData.avatar} 
-              alt="Avatar" 
+              alt={userData.username}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = `https://ui-avatars.com/api/?name=${userData.username}&background=833ab4&color=fff&bold=true`;
+              }}
               style={{ width: '55px', height: '55px', borderRadius: '50%', objectFit: 'cover', display: 'block', background: '#fff' }} 
             />
           </div>
@@ -77,7 +82,7 @@ export default function TopFollowMiner() {
         </div>
       </div>
 
-      {/* Minero Automático con Monedas Flotantes */}
+      {/* Minero Automático */}
       <div style={{ background: 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)', borderRadius: '30px', padding: '45px 20px', color: '#fff', boxShadow: '0 20px 40px rgba(131, 58, 180, 0.35)', position: 'relative', overflow: 'hidden', marginBottom: '25px' }}>
         
         {floatingCoins.map(coin => (
