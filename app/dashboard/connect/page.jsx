@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function ConnectInstagram() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const router = useRouter();
@@ -19,7 +20,6 @@ export default function ConnectInstagram() {
     const cleanUsername = username.trim().replace('@', '');
 
     try {
-      // Llamada al backend para autenticar con Instagram y extraer datos reales
       const response = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,16 +29,15 @@ export default function ConnectInstagram() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Guardamos los datos reales devueltos por el sistema en el navegador
         localStorage.setItem('folaxi_instagram_user', cleanUsername);
         localStorage.setItem('folaxi_instagram_avatar', data.avatarUrl || '');
         router.push('/dashboard/miner');
       } else {
-        setErrorMsg(data.message || 'Error al conectar con Instagram. Verifica tus datos.');
+        setErrorMsg(data.message || 'Credenciales inválidas. Inténtalo nuevamente.');
         setLoading(false);
       }
     } catch (error) {
-      setErrorMsg('Error de red. Inténtalo nuevamente.');
+      setErrorMsg('Error de conexión. Inténtalo de nuevo.');
       setLoading(false);
     }
   };
@@ -54,12 +53,12 @@ export default function ConnectInstagram() {
         <h1 style={{ fontSize: '1.6rem', fontWeight: '900', color: '#0f172a', marginBottom: '8px' }}>
           Conecta tu Instagram
         </h1>
-        <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: '25px', lineHeight: '1.4' }}>
+        <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: '22px', lineHeight: '1.4' }}>
           Ingresa tus credenciales para autenticar tu cuenta, extraer tu avatar real y activar el minero automático.
         </p>
 
         {errorMsg && (
-          <div style={{ background: '#fef2f2', color: '#dc2626', padding: '10px', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '20px', fontWeight: '700' }}>
+          <div style={{ background: '#fef2f2', color: '#dc2626', padding: '10px', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '18px', fontWeight: '700' }}>
             {errorMsg}
           </div>
         )}
@@ -86,14 +85,24 @@ export default function ConnectInstagram() {
             <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
               Contraseña de Instagram
             </label>
-            <input 
-              type="password"
-              placeholder="••••••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{ width: '100%', padding: '12px 14px', border: '2px solid #e2e8f0', background: '#f8fafc', borderRadius: '12px', outline: 'none', fontSize: '0.95rem', color: '#0f172a', fontWeight: '600', boxSizing: 'border-box' }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', padding: '0 14px' }}>
+              <input 
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '12px 0', border: 'none', background: 'transparent', outline: 'none', fontSize: '0.95rem', color: '#0f172a', fontWeight: '600' }}
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '1.1rem', padding: '4px' }}
+                title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
           </div>
 
           <button 
@@ -112,7 +121,7 @@ export default function ConnectInstagram() {
               boxShadow: '0 10px 25px rgba(131, 58, 180, 0.4)'
             }}
           >
-            {loading ? 'Autenticando con Instagram...' : 'Conectar y Iniciar Minero ⚡'}
+            {loading ? 'Autenticando...' : 'Conectar y Iniciar Minero ⚡'}
           </button>
         </form>
 
