@@ -18,9 +18,8 @@ export default function NewCampaignPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Sincronización híbrida: Busca sesión de Supabase o toma los datos locales del almacenamiento
     async function loadUserData() {
-      const savedUser = localStorage.getItem('folaxi_ig_user');
+      const savedUser = localStorage.getItem('folaxi_instagram_user');
       const savedCoins = localStorage.getItem('folaxi_coins');
       
       if (savedCoins) setCoins(parseInt(savedCoins));
@@ -41,7 +40,6 @@ export default function NewCampaignPage() {
       } else if (savedUser) {
         setUser({ id: 'local-bypass', email: `${savedUser}@folaxi.com` });
       } else {
-        // Fallback para permitir usar la app libremente sin bloqueos
         setUser({ id: 'local-bypass', email: 'user@folaxi.com' });
       }
     }
@@ -65,7 +63,6 @@ export default function NewCampaignPage() {
     setMessage('');
 
     try {
-      // Si estamos en modo Supabase real y hay conexión
       if (user.id !== 'local-bypass') {
         const { error: taskError } = await supabase
           .from('tasks')
@@ -93,7 +90,6 @@ export default function NewCampaignPage() {
         setCoins(newCoins);
         localStorage.setItem('folaxi_coins', newCoins.toString());
       } else {
-        // Modo local fluido
         await new Promise((resolve) => setTimeout(resolve, 800));
         const newCoins = coins - totalCost;
         setCoins(newCoins);
@@ -111,17 +107,19 @@ export default function NewCampaignPage() {
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '450px', margin: '40px auto', fontFamily: 'sans-serif', background: '#ffffff', borderRadius: '16px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05)', border: '1px solid #f3f4f6', color: '#1e293b' }}>
-      <h2 style={{ marginBottom: '8px', color: '#111827', fontSize: '1.4rem' }}>Crear Campaña - Folaxi</h2>
-      <p style={{ color: '#6b7280', marginBottom: '20px' }}>Saldo disponible: <strong style={{ color: '#15803d', fontSize: '1.2rem' }}>{coins} 🪙</strong></p>
+    <div style={{ padding: '24px', maxWidth: '480px', margin: '30px auto', fontFamily: 'system-ui, sans-serif', background: '#ffffff', borderRadius: '24px', boxShadow: '0 15px 35px rgba(131, 58, 180, 0.08)', border: '1px solid #f3e8ff', color: '#1e293b' }}>
+      <h2 style={{ marginBottom: '8px', color: '#0f172a', fontSize: '1.5rem', fontWeight: '900' }}>Crear Campaña 📈</h2>
+      <p style={{ color: '#64748b', marginBottom: '24px', fontSize: '0.95rem' }}>
+        Saldo disponible: <strong style={{ color: '#9333ea', fontSize: '1.2rem' }}>{coins} 🪙</strong>
+      </p>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 'bold', color: '#374151' }}>Tipo de interacción</label>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Tipo de interacción</label>
           <select 
             value={type} 
             onChange={(e) => setType(e.target.value)}
-            style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #d1d5db', background: '#fff', color: '#000', fontSize: '0.95rem' }}
+            style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '2px solid #e2e8f0', background: '#f8fafc', color: '#0f172a', fontSize: '0.95rem', fontWeight: '600', outline: 'none' }}
           >
             <option value="view">Vistas (Views)</option>
             <option value="follow">Seguidores (Follows)</option>
@@ -130,31 +128,31 @@ export default function NewCampaignPage() {
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 'bold', color: '#374151' }}>Enlace objetivo (URL)</label>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Enlace objetivo (URL)</label>
           <input 
             type="url" 
             placeholder="https://instagram.com/p/..." 
             value={targetUrl}
             onChange={(e) => setTargetUrl(e.target.value)}
             required
-            style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #d1d5db', boxSizing: 'border-box', color: '#000', fontSize: '0.95rem' }}
+            style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '2px solid #e2e8f0', background: '#f8fafc', boxSizing: 'border-box', color: '#0f172a', fontSize: '0.95rem', fontWeight: '600', outline: 'none' }}
           />
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 'bold', color: '#374151' }}>Cantidad deseada</label>
+          <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', fontWeight: '800', color: '#334155', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Cantidad deseada</label>
           <input 
             type="number" 
             min="1" 
             value={totalQuantity}
             onChange={(e) => setTotalQuantity(e.target.value)}
             required
-            style={{ width: '100%', padding: '12px', borderRadius: '10px', border: '1px solid #d1d5db', boxSizing: 'border-box', color: '#000', fontSize: '0.95rem' }}
+            style={{ width: '100%', padding: '14px', borderRadius: '14px', border: '2px solid #e2e8f0', background: '#f8fafc', boxSizing: 'border-box', color: '#0f172a', fontSize: '0.95rem', fontWeight: '600', outline: 'none' }}
           />
         </div>
 
-        <div style={{ background: '#f0fdf4', padding: '14px', borderRadius: '10px', fontSize: '0.95rem', color: '#166534', border: '1px solid #bbf7d0' }}>
-          Costo total: <strong>{totalQuantity * rewardCoins} 🪙</strong>
+        <div style={{ background: 'linear-gradient(135deg, #f3e8ff, #fce7f3)', padding: '16px', borderRadius: '14px', fontSize: '0.95rem', color: '#7e22ce', border: '1px solid #e9d5ff', fontWeight: '700' }}>
+          Costo total: <strong style={{ fontSize: '1.1rem' }}>{totalQuantity * rewardCoins} 🪙</strong>
         </div>
 
         <button 
@@ -162,22 +160,22 @@ export default function NewCampaignPage() {
           disabled={loading}
           style={{ 
             width: '100%', 
-            padding: '14px', 
-            background: 'linear-gradient(135deg, #10b981, #059669)', 
+            padding: '16px', 
+            background: loading ? '#cbd5e1' : 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)', 
             color: '#fff', 
             border: 'none', 
-            borderRadius: '10px', 
-            cursor: 'pointer',
-            fontWeight: 'bold',
-            fontSize: '1rem',
-            boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)'
+            borderRadius: '16px', 
+            cursor: loading ? 'not-allowed' : 'pointer',
+            fontWeight: '900',
+            fontSize: '1.05rem',
+            boxShadow: '0 10px 25px rgba(131, 58, 180, 0.3)'
           }}
         >
           {loading ? 'Creando campaña...' : '🚀 Lanzar Campaña'}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: '16px', textAlign: 'center', fontSize: '0.9rem', color: message.includes('éxito') ? '#10b981' : '#dc2626', fontWeight: '600' }}>{message}</p>}
+      {message && <p style={{ marginTop: '18px', textAlign: 'center', fontSize: '0.9rem', color: message.includes('éxito') ? '#16a34a' : '#dc2626', fontWeight: '700' }}>{message}</p>}
     </div>
   );
 }
