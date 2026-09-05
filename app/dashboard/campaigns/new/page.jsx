@@ -5,6 +5,7 @@ export default function NewCampaignPage() {
   const [coins, setCoins] = useState(0);
   const [link, setLink] = useState('');
   const [quantity, setQuantity] = useState(10);
+  const [serviceType, setServiceType] = useState('8751'); // ID de servicio predeterminado de JAP
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -20,7 +21,7 @@ export default function NewCampaignPage() {
 
   const totalCost = quantity * 1; // 1 moneda por interacción
 
-  const handleLaunchCampaign = (e) => {
+  const handleLaunchCampaign = async (e) => {
     e.preventDefault();
     setMessage('');
 
@@ -36,14 +37,35 @@ export default function NewCampaignPage() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      const newCoins = coins - totalCost;
-      setCoins(newCoins);
-      localStorage.setItem('folaxi_coins', newCoins.toString());
+    try {
+      // Petición real a tu endpoint de backend conectado con JAP
+      const response = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          link: link,
+          quantity: parseInt(quantity),
+          serviceId: parseInt(serviceType),
+          userCoins: coins,
+          cost: totalCost
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setCoins(data.remainingCoins);
+        localStorage.setItem('folaxi_coins', data.remainingCoins.toString());
+        setMessage(`✅ ¡Campaña lanzada con éxito y enviada al proveedor real! (ID de orden: ${data.orderId}) 🚀`);
+        setLink('');
+      } else {
+        setMessage(`❌ ${data.message || 'Hubo un error al procesar la campaña.'}`);
+      }
+    } catch (error) {
+      setMessage('❌ Error de red al conectar con el servidor.');
+    } finally {
       setLoading(false);
-      setMessage(`¡Campaña lanzada con éxito! Se descontaron ${totalCost} 🪙 de tu saldo. 🚀`);
-      setLink('');
-    }, 800);
+    }
   };
 
   return (
@@ -58,7 +80,7 @@ export default function NewCampaignPage() {
         </p>
 
         {message && (
-          <div style={{ background: message.includes('éxito') ? '#f0fdf4' : '#fef2f2', color: message.includes('éxito') ? '#16a34a' : '#dc2626', padding: '12px 16px', borderRadius: '12px', fontSize: '0.88rem', marginBottom: '20px', fontWeight: '700', border: `1px solid ${message.includes('éxito') ? '#bbf7d0' : '#fecaca'}` }}>
+          <div style={{ background: message.includes('✅') ? '#f0fdf4' : '#fef2f2', color: message.includes('✅') ? '#16a34a' : '#dc2626', padding: '12px 16px', borderRadius: '12px', fontSize: '0.88rem', marginBottom: '20px', fontWeight: '700', border: `1px solid ${message.includes('✅') ? '#bbf7d0' : '#fecaca'}` }}>
             {message}
           </div>
         )}
@@ -68,10 +90,14 @@ export default function NewCampaignPage() {
             <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: '800', color: '#334155', marginBottom: '8px' }}>
               ¿QUÉ DESEAS CONSEGUIR?
             </label>
-            <select style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '2px solid #e2e8f0', background: '#f8fafc', fontWeight: '700', color: '#0f172a', outline: 'none' }}>
-              <option>👁️ Vistas para Reels o Videos</option>
-              <option>❤️ Me gusta para Publicaciones</option>
-              <option>👤 Seguidores para Perfil</option>
+            <select 
+              value={serviceType}
+              onChange={(e) => setServiceType(e.target.value)}
+              style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '2px solid #e2e8f0', background: '#f8fafc', fontWeight: '700', color: '#0f172a', outline: 'none' }}
+            >
+              <option value="8751">👁️ Seguidores con IA - Estándar (ID 8751)</option>
+              <option value="8752">❤️ Seguidores con IA - Pro (ID 8752)</option>
+              <option value="8753">👤 Seguidores con IA - Premium (ID 8753)</option>
             </select>
           </div>
 
@@ -88,7 +114,7 @@ export default function NewCampaignPage() {
               style={{ width: '100%', padding: '12px 14px', borderRadius: '12px', border: '2px solid #e2e8f0', background: '#f8fafc', fontWeight: '600', color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
             />
             <span style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', display: 'block' }}>
-              💡 Pega el enlace directo de tu Reel, video o publicación donde quieres recibir las interacciones.
+              💡 Pega el enlace directo de tu perfil o publicación donde quieres recibir el servicio.
             </span>
           </div>
 
@@ -129,7 +155,7 @@ export default function NewCampaignPage() {
               marginTop: '10px'
             }}
           >
-            {loading ? 'Procesando...' : '🚀 Lanzar Campaña'}
+            {loading ? 'Conectando con proveedor...' : '🚀 Lanzar Campaña Real'}
           </button>
         </form>
 
